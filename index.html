@@ -1,0 +1,745 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>[PROJECT NAME] — Investor demo</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+:root {
+  --bg: #F6F4EF; --desk: #ECE8E0; --ink: #15213B; --ink2: #3B4659; --muted: #4A5568; --line: #E6E1D8;
+  --green: #1E7A4C; --green-d: #155C39; --green-t: #E3F0E8; --coral: #D9663F; --coral-d: #93401C; --coral-t: #FBE7DE;
+  --blue-t: #E6ECF5; --blue-d: #26406A;
+  --display: 'Bricolage Grotesque', 'Avenir Next', 'Segoe UI', system-ui, sans-serif;
+  --body: 'Figtree', 'Avenir Next', 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body { background: var(--desk); color: var(--ink); font-family: var(--body); -webkit-font-smoothing: antialiased; }
+button { font-family: inherit; }
+h1, h2, h3 { font-family: var(--display); margin: 0; letter-spacing: -0.015em; text-wrap: pretty; }
+p { margin: 0; text-wrap: pretty; }
+
+/* ---------- Presentation frame ---------- */
+.stage { min-height: 100vh; display: grid; grid-template-columns: minmax(300px, 380px) auto minmax(300px, 380px); justify-content: center; align-items: center; gap: 24px; padding: 24px; }
+.rail, .side { align-self: stretch; display: flex; flex-direction: column; gap: 24px; padding: 16px 8px; max-height: calc(100vh - 48px); }
+.brand { display: flex; align-items: center; gap: 10px; font-family: var(--display); font-weight: 700; font-size: 20px; }
+.slogan { font-family: var(--display); font-size: 34px; font-weight: 600; line-height: 1.05; letter-spacing: -0.02em; }
+.meta { font-size: 14px; color: var(--muted); line-height: 1.4; }
+.stages { display: flex; flex-direction: column; gap: 2px; overflow-y: auto; }
+.stg { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 42px; padding: 0 12px; border: 0; border-radius: 10px; background: transparent; color: var(--muted); font: 500 15px var(--body); text-align: left; cursor: pointer; }
+.stg:hover { background: rgba(21,33,59,.06); }
+.stg .num { width: 24px; height: 24px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; background: #DCD7CC; color: var(--ink2); flex: none; }
+.stg.on { background: #fff; color: var(--ink); font-weight: 700; box-shadow: 0 1px 2px rgba(21,33,59,.08), 0 6px 18px rgba(21,33,59,.06); }
+.stg.on .num { background: var(--green); color: #fff; }
+.stg.done .num { background: #CFE3D6; color: var(--green-d); }
+.label { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #5E6878; }
+.panel { background: #fff; border-radius: 18px; padding: 20px; box-shadow: 0 1px 2px rgba(21,33,59,.06), 0 6px 18px rgba(21,33,59,.05); }
+.who { display: flex; align-items: center; gap: 14px; }
+.av { width: 48px; height: 48px; border-radius: 24px; display: inline-flex; align-items: center; justify-content: center; font: 700 20px var(--display); flex: none; }
+.av-giver { background: var(--green-t); color: var(--green-d); } .av-recipient { background: var(--coral-t); color: var(--coral-d); }
+.av-both { background: var(--blue-t); color: var(--blue-d); } .av-neutral { background: #E4DFD5; color: var(--ink2); }
+.dbtn { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; min-height: 50px; border-radius: 14px; border: 1.5px solid #CFC9BD; background: #fff; color: var(--ink); font: 600 16px var(--body); cursor: pointer; }
+.dbtn:hover { border-color: var(--ink); }
+.dbtn:disabled { color: #8A93A3; border-color: #DDD8CE; background: #F3F0EA; cursor: default; }
+.principles { margin-top: auto; display: flex; flex-direction: column; gap: 10px; padding-top: 18px; border-top: 1px solid #D9D3C7; }
+.pr { display: flex; gap: 10px; font-size: 14px; line-height: 1.4; color: var(--ink2); }
+
+.device { padding: 8px; background: var(--ink); border-radius: 46px; box-shadow: 0 34px 70px -24px rgba(21,33,59,.5); }
+.phone { width: 390px; height: 844px; border-radius: 38px; overflow: hidden; background: var(--bg); display: flex; flex-direction: column; position: relative; }
+
+@media (max-height: 900px) and (min-width: 1101px) { .device { transform: scale(calc((100vh - 40px) / 860)); transform-origin: center; } }
+@media (max-width: 1100px) {
+  .stage { display: block; padding: 0; }
+  .rail, .side { display: none; }
+  .device { padding: 0; border-radius: 0; background: none; box-shadow: none; display: flex; justify-content: center; min-height: 100vh; }
+  .phone { width: 100%; max-width: 480px; height: 100vh; height: 100dvh; border-radius: 0; }
+}
+
+/* ---------- Phone UI ---------- */
+.demobar { height: 54px; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 0 14px 0 18px; border-bottom: 1px dashed #D6D0C4; background: var(--bg); }
+.role { display: inline-flex; align-items: center; gap: 8px; height: 30px; padding: 0 12px; border-radius: 15px; font-size: 13px; font-weight: 700; letter-spacing: .02em; }
+.role-giver { background: var(--green-t); color: var(--green-d); } .role-recipient { background: var(--coral-t); color: var(--coral-d); }
+.role-both { background: var(--blue-t); color: var(--blue-d); } .role-neutral { background: #E9E5DD; color: var(--ink2); }
+.rdot { width: 8px; height: 8px; border-radius: 4px; background: currentColor; display: inline-block; }
+.restart { display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 14px; border-radius: 20px; border: 1px solid #D6D0C4; background: #fff; color: var(--ink2); font: 600 13px var(--body); cursor: pointer; }
+.restart:hover { color: var(--ink); border-color: var(--ink); }
+.screen { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.screen.enter { animation: ppIn .22s ease both; }
+@keyframes ppIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes ppSpin { to { transform: rotate(360deg); } }
+@keyframes ppDrop { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+.scroll { flex: 1; min-height: 0; overflow-y: auto; scrollbar-width: none; display: flex; flex-direction: column; }
+.scroll::-webkit-scrollbar { width: 0; }
+.pad { padding: 20px; gap: 14px; }
+.foot { flex: none; padding: 12px 20px 20px; display: flex; flex-direction: column; gap: 8px; border-top: 1px solid var(--line); background: var(--bg); }
+.top { display: flex; align-items: center; gap: 4px; padding: 6px 12px 2px; min-height: 56px; font-weight: 700; font-size: 17px; }
+.btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 54px; border: 0; border-radius: 14px; font: 600 17px var(--body); cursor: pointer; padding: 0 20px; transition: transform .08s ease, background .15s ease; }
+.btn:active { transform: scale(.985); }
+.btn-primary { background: var(--green); color: #fff; } .btn-primary:hover { background: #18663F; }
+.btn-primary:disabled { background: #BFCFC5; color: #F7FAF8; cursor: default; }
+.btn-secondary { background: #fff; color: var(--ink); border: 1.5px solid #D6D0C4; } .btn-secondary:hover { border-color: var(--ink); }
+.btn-ghost { background: transparent; color: var(--ink2); min-height: 46px; } .btn-ghost:hover { color: var(--ink); text-decoration: underline; }
+.btn-light { background: #fff; color: var(--ink); }
+.btn-outline-light { background: transparent; color: #fff; border: 1.5px solid rgba(255,255,255,.45); }
+.iconbtn { width: 44px; height: 44px; border-radius: 22px; border: 0; background: transparent; color: inherit; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; flex: none; }
+.iconbtn:hover { background: rgba(21,33,59,.06); }
+.card { background: #fff; border-radius: 18px; box-shadow: 0 1px 2px rgba(21,33,59,.06), 0 4px 16px rgba(21,33,59,.05); }
+.free { display: inline-flex; align-items: center; height: 26px; padding: 0 10px; border-radius: 8px; background: var(--green); color: #fff; font-weight: 700; font-size: 13px; letter-spacing: .08em; }
+.lbl { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #5E6878; }
+.val { font-size: 16px; line-height: 1.4; }
+.sub { font-size: 14px; color: var(--muted); line-height: 1.45; }
+.opt { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 12px 16px; border-radius: 14px; border: 1.5px solid #E1DCD2; background: #fff; text-align: left; font: 500 16px var(--body); color: var(--ink); cursor: pointer; }
+.opt:hover { border-color: #A9B0BC; }
+.opt .dot { width: 22px; height: 22px; border-radius: 11px; border: 2px solid #A9B0BC; flex: none; background: #fff; }
+.opt.on { border-color: var(--green); background: #F0F7F2; } .opt.on .dot { border: 7px solid var(--green); }
+.amt { min-height: 54px; border-radius: 14px; border: 1.5px solid #D6D0C4; background: #fff; font: 600 17px var(--body); color: var(--ink); cursor: pointer; }
+.amt:hover { border-color: var(--ink); }
+.amt.on { border-color: var(--green); background: #F0F7F2; color: var(--green-d); box-shadow: inset 0 0 0 1px var(--green); }
+.ic { width: 40px; height: 40px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; flex: none; }
+.ic-social { background: var(--blue-t); color: var(--blue-d); } .ic-give { background: var(--coral-t); color: #A8461F; } .ic-env { background: var(--green-t); color: var(--green-d); }
+.cause { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--coral-d); }
+.qa { display: flex; align-items: center; gap: 8px; min-height: 52px; padding: 8px 12px; border-radius: 14px; border: 1.5px solid #E1DCD2; background: #fff; font: 600 14px var(--body); color: var(--ink); text-align: left; cursor: pointer; }
+.qa:hover { border-color: #A9B0BC; }
+.feeditem { display: flex; align-items: center; gap: 14px; width: 100%; padding: 12px; border: 0; border-radius: 16px; background: #fff; text-align: left; cursor: pointer; color: var(--ink); box-shadow: 0 1px 2px rgba(21,33,59,.06); }
+.feeditem:hover { box-shadow: 0 1px 2px rgba(21,33,59,.08), 0 6px 18px rgba(21,33,59,.08); }
+.thumb { width: 64px; height: 64px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex: none; }
+.img { border-radius: 18px; overflow: hidden; background: #EFE9DF; position: relative; flex: none; }
+.img svg { display: block; width: 100%; height: 100%; }
+.img .free { position: absolute; top: 12px; left: 12px; }
+.tbtn { padding: 0; border: 2px solid transparent; border-radius: 12px; overflow: hidden; width: 72px; height: 56px; cursor: pointer; background: #EFE9DF; flex: none; }
+.tbtn svg { display: block; width: 100%; height: 100%; }
+.tbtn.on { border-color: var(--green); }
+.mini { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 0 14px; border-radius: 12px; border: 1.5px solid var(--green); background: #fff; color: var(--green-d); font: 700 14px var(--body); cursor: pointer; }
+.mini:disabled { border-color: #CFE3D6; background: var(--green-t); cursor: default; }
+.spin { width: 46px; height: 46px; border-radius: 23px; border: 4px solid var(--green-t); border-top-color: var(--green); animation: ppSpin .8s linear infinite; }
+.chk { width: 22px; height: 22px; accent-color: var(--green); flex: none; margin: 0; }
+.pill { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px; border-radius: 15px; font-size: 13px; font-weight: 700; }
+.rows > div { display: flex; gap: 12px; padding: 13px 16px; border-bottom: 1px solid #EEEAE2; }
+.rows > div:last-child { border-bottom: 0; }
+.col { display: flex; flex-direction: column; gap: 2px; }
+.row { display: flex; align-items: center; gap: 12px; }
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px; }
+.pav { width: 44px; height: 44px; border-radius: 22px; display: inline-flex; align-items: center; justify-content: center; font: 700 18px var(--display); flex: none; }
+.banner { position: absolute; top: 62px; left: 12px; right: 12px; z-index: 8; display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 14px; background: var(--ink); color: #fff; font-size: 14px; font-weight: 600; line-height: 1.35; box-shadow: 0 10px 24px rgba(21,33,59,.28); animation: ppDrop .22s ease both; pointer-events: none; }
+.toast { position: absolute; left: 16px; right: 16px; bottom: 112px; z-index: 9; padding: 12px 16px; border-radius: 14px; background: var(--ink); color: #fff; font-size: 14px; font-weight: 500; line-height: 1.4; text-align: center; box-shadow: 0 10px 24px rgba(21,33,59,.28); animation: ppIn .2s ease both; pointer-events: none; }
+.dark { background: var(--ink); color: #fff; }
+.dark .foot { background: var(--ink); border-top-color: #2E3D5C; }
+.dark .iconbtn:hover { background: rgba(255,255,255,.08); }
+.dpill { background: rgba(255,255,255,.08); color: #E8ECF3; font-weight: 600; }
+.mdl { padding: 14px 16px; border-radius: 16px; background: #1F2D4A; display: flex; flex-direction: column; gap: 6px; }
+.kv { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid #2E3D5C; font-size: 15px; }
+.kv span:last-child { color: #F6B79C; font-weight: 600; text-align: right; }
+.sheetwrap { position: absolute; inset: 0; background: rgba(21,33,59,.42); display: flex; align-items: flex-end; z-index: 5; }
+.sheet { width: 100%; background: #fff; border-radius: 26px 26px 0 0; padding: 26px 24px 34px; display: flex; flex-direction: column; align-items: center; gap: 14px; animation: ppIn .2s ease both; }
+textarea, input[type=number] { font-family: var(--body); }
+:focus-visible { outline: 3px solid #2E6FD1; outline-offset: 2px; }
+
+/* ---------- Screen map overlay ---------- */
+.mapwrap { position: fixed; inset: 0; z-index: 50; background: rgba(21,33,59,.5); display: none; overflow: auto; padding: 24px; }
+.mapwrap.open { display: block; }
+.map { max-width: 1640px; margin: 0 auto; background: var(--bg); border-radius: 24px; padding: 40px 44px; display: flex; flex-direction: column; gap: 28px; }
+.lanes { display: grid; grid-template-columns: 110px repeat(10, minmax(110px, 1fr)); grid-auto-rows: 96px; gap: 10px; overflow-x: auto; }
+.lane { grid-column: 1 / -1; border-radius: 14px; }
+.ll { display: flex; align-items: center; padding-left: 14px; font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; z-index: 1; }
+.bx { background: #fff; border-radius: 14px; padding: 10px 12px; display: flex; flex-direction: column; gap: 5px; box-shadow: 0 1px 2px rgba(21,33,59,.08); z-index: 1; cursor: pointer; border: 0; text-align: left; color: var(--ink); font-family: var(--body); }
+.bx:hover { box-shadow: 0 0 0 2px var(--green); }
+.bx b { font-size: 14.5px; line-height: 1.2; } .bx small { font-size: 12.5px; color: var(--muted); line-height: 1.3; }
+.n { width: 26px; height: 26px; border-radius: 13px; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; flex: none; }
+.ng { background: var(--green); } .nr { background: #B4532A; } .ns { background: var(--blue-d); }
+.alts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr)); gap: 16px; }
+.alt { background: #fff; border-radius: 18px; padding: 20px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 1px 2px rgba(21,33,59,.08); }
+.flow { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.st { display: inline-flex; align-items: center; min-height: 34px; padding: 0 12px; border-radius: 10px; font-size: 14px; font-weight: 600; background: #F1EEE8; }
+</style>
+</head>
+<body>
+<div class="stage">
+  <aside class="rail">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="brand"><span id="logo1"></span>[PROJECT NAME]</div>
+      <div class="slogan">Pass the good forward.</div>
+      <div class="meta">Interactive investor demo · First pilot: Malmö, Sweden</div>
+    </div>
+    <nav class="stages" id="stages" aria-label="Demo stages"></nav>
+  </aside>
+  <div class="device"><div class="phone" id="phone"></div></div>
+  <aside class="side" id="side"></aside>
+</div>
+<div class="mapwrap" id="mapwrap" role="dialog" aria-label="Screen map"></div>
+
+<script>
+(function () {
+  // ---------- Icons ----------
+  const I = (d, s = 20, w = 1.8, extra = '') => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" ${extra}>${d}</svg>`;
+  const P = {
+    back: '<path d="M15 18l-6-6 6-6"/>', restart: '<path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/>',
+    swap: '<path d="M7 7h12l-3-3"/><path d="M17 17H5l3 3"/>', check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+    pin: '<path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
+    clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+    shield: '<path d="M12 3l7 3v6c0 4.5-3 7.6-7 9-4-1.4-7-4.5-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/>',
+    lock: '<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+    social: '<circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3.2 2.8-5 5.5-5s4.9 1.8 5.5 5"/><circle cx="17" cy="9" r="2.5"/><path d="M15.5 14.2c2.6-.3 4.6 1.4 5 4.8"/>',
+    give: '<circle cx="8" cy="12" r="4.5"/><path d="M13.5 12H21"/><path d="M18 9l3 3-3 3"/>',
+    env: '<path d="M20 12a8 8 0 0 1-13.7 5.7"/><path d="M4 12a8 8 0 0 1 13.7-5.7"/><path d="M17.8 3v3.6h-3.6"/><path d="M6.2 21v-3.6h3.6"/>',
+    msg: '<path d="M4 5h16v11H9l-5 4z"/>', cal: '<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/>',
+    qr: '<rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><path d="M14 14h2v2h-2zM18 18h2v2h-2zM14 18h2M18 14h2"/>',
+    plus: '<path d="M12 5v14M5 12h14"/>', x: '<path d="M6 6l12 12M18 6L6 18"/>',
+    box: '<path d="M3.5 7.5L12 3l8.5 4.5v9L12 21l-8.5-4.5z"/><path d="M3.5 7.5L12 12l8.5-4.5M12 12v9"/>',
+    ruler: '<path d="M3 17L17 3l4 4L7 21z"/><path d="M7 13l2 2M10 10l2 2M13 7l2 2"/>',
+    bell: '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10 20a2 2 0 0 0 4 0"/>',
+    arrow: '<path d="M5 12h14M14 7l5 5-5 5"/>', map: '<path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/>',
+    lamp: '<path d="M9 3h6l-1 6h3l-6 12 1-8H8z"/>', games: '<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M8 6V4M16 6V4"/>',
+    pot: '<path d="M6 20h12M8 20l1-9h6l1 9"/><path d="M12 11V7"/><path d="M12 7c-3 0-5-2-5-4 3 0 5 1.5 5 4zM12 7c3 0 5-2 5-4-3 0-5 1.5-5 4z"/>',
+    shelf: '<rect x="5" y="3" width="14" height="18" rx="1"/><path d="M5 9h14M5 15h14"/>',
+    kettle: '<path d="M6 10h11v7a3 3 0 0 1-3 3H9a3 3 0 0 1-3-3z"/><path d="M17 12h1.5a2 2 0 0 1 0 4H17"/><path d="M9 6c0-1 1-1 1-2M13 6c0-1 1-1 1-2"/>',
+    helmet: '<path d="M3 15a9 9 0 0 1 18 0v1H3z"/><path d="M9 7l1 8M15 7l-1 8"/>'
+  };
+  const LOGO = (s = 26) => `<svg width="${s}" height="${s}" viewBox="0 0 30 30" aria-hidden="true"><rect width="30" height="30" rx="9" fill="#1E7A4C"/><circle cx="11" cy="15" r="4.2" fill="none" stroke="#fff" stroke-width="2"/><path d="M17 15h7M21 12l3 3-3 3" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  document.getElementById('logo1').innerHTML = LOGO(30);
+
+  // ---------- Item illustration ----------
+  function desk(view) {
+    const W = 'fill="#FBFAF7" stroke="#C9BBA2" stroke-width="2"', T = 'fill="#E7CC9E" stroke="#BB9C6B" stroke-width="2"';
+    if (view === 'side') return `<svg viewBox="0 0 320 240" preserveAspectRatio="xMidYMid slice" role="img" aria-label="The desk with its chair tucked in"><rect width="320" height="240" fill="#E9E3D7"/><rect y="182" width="320" height="58" fill="#DCD0BB"/><ellipse cx="160" cy="202" rx="118" ry="7" fill="#15213B" opacity=".08"/><rect x="130" y="62" width="60" height="14" rx="3" ${T}/><rect x="134" y="58" width="10" height="52" rx="3" ${T}/><rect x="176" y="58" width="10" height="52" rx="3" ${T}/><rect x="72" y="104" width="9" height="96" rx="2" ${W}/><rect x="239" y="104" width="9" height="96" rx="2" ${W}/><rect x="62" y="92" width="196" height="14" rx="4" ${T}/><rect x="128" y="150" width="64" height="11" rx="3" ${T}/><rect x="134" y="161" width="7" height="38" rx="2" ${W}/><rect x="179" y="161" width="7" height="38" rx="2" ${W}/><rect x="200" y="74" width="34" height="18" rx="2" fill="#2E4C7A"/><path d="M90 92V66h20" fill="none" stroke="#15213B" stroke-width="3" stroke-linecap="round"/><path d="M104 60h16l-4 10h-8z" fill="#E9A07F"/></svg>`;
+    if (view === 'detail') return `<svg viewBox="0 0 320 240" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Close-up of the drawer showing light signs of use"><rect width="320" height="240" fill="#E7CC9E"/><rect width="320" height="56" fill="#E2C592"/><path d="M0 78h320" stroke="#D9BC8A" stroke-width="2"/><rect x="40" y="76" width="240" height="130" rx="10" fill="#F3E2C2" stroke="#BB9C6B" stroke-width="3"/><rect x="128" y="132" width="64" height="16" rx="8" fill="#BB9C6B"/><path d="M70 104l22 6M232 172l24-8M240 178l14-4" stroke="#C7A877" stroke-width="2" stroke-linecap="round"/><path d="M60 94c40-6 80 6 120-2s60 4 90 0" fill="none" stroke="#E9D6B2" stroke-width="2"/></svg>`;
+    return `<svg viewBox="0 0 320 240" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Light wood children's desk with a drawer and a matching chair"><rect width="320" height="240" fill="#EFE9DF"/><rect y="184" width="320" height="56" fill="#E2D7C4"/><rect x="196" y="34" width="64" height="48" rx="4" fill="#F7F3EC" stroke="#D8CDBA" stroke-width="2"/><path d="M206 70l14-16 10 10 8-6 14 12" fill="none" stroke="#9DBFA8" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="242" cy="48" r="5" fill="#E9A07F"/><ellipse cx="160" cy="204" rx="122" ry="7" fill="#15213B" opacity=".08"/><rect x="58" y="112" width="9" height="90" rx="2" ${W}/><rect x="191" y="112" width="9" height="90" rx="2" ${W}/><rect x="128" y="112" width="70" height="26" rx="3" fill="#F3E2C2" stroke="#BB9C6B" stroke-width="2"/><rect x="155" y="122" width="16" height="5" rx="2.5" fill="#BB9C6B"/><rect x="48" y="100" width="162" height="14" rx="4" ${T}/><rect x="64" y="80" width="15" height="20" rx="3" fill="#3F7D5B"/><path d="M68 80l-2-14M72 80v-16M76 80l3-13" stroke="#D9663F" stroke-width="2.4" stroke-linecap="round"/><rect x="94" y="90" width="44" height="10" rx="2" fill="#D9663F"/><rect x="98" y="81" width="38" height="9" rx="2" fill="#2E4C7A"/><rect x="232" y="104" width="10" height="56" rx="3" ${T}/><rect x="282" y="104" width="10" height="56" rx="3" ${T}/><rect x="232" y="108" width="60" height="14" rx="3" ${T}/><rect x="226" y="150" width="72" height="11" rx="3" ${T}/><rect x="232" y="161" width="7" height="40" rx="2" ${W}/><rect x="285" y="161" width="7" height="40" rx="2" ${W}/></svg>`;
+  }
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  // ---------- Data ----------
+  const ROLE = { s1: 'intro', s2: 'giver', s3: 'giver', s4: 'giver', s5: 'giver', s6: 'recipient', s7: 'recipient', s8: 'recipient', s9: 'giver', s10: 'giver', s11: 'recipient', sCancel: 'recipient', sCancelAnna: 'giver', s12: 'both', s13: 'giver', s14: 'recipient', s15: 'recipient', s16: 'recipient', s17: 'recipient', sSkip: 'recipient', s18: 'investor', s19: 'investor' };
+  const STAGE = { s1: 1, s2: 2, s3: 2, s4: 3, s5: 3, s6: 4, s7: 4, s8: 4, s9: 5, s10: 6, s11: 6, sCancel: 6, sCancelAnna: 6, s12: 7, s13: 8, s14: 9, sSkip: 9, s15: 10, s16: 11, s17: 12, s18: 13, s19: 13 };
+  const PREV = { s3: 's2', s4: 's3', s7: 's6', s8: 's7', s15: 's14', s16: 's14', s19: 's18' };
+  const SWITCH = { s2: 's6', s3: 's6', s4: 's6', s5: 's6', s6: 's5', s7: 's5', s8: 's9', s9: 's8', s10: 's11', s11: 's10', sCancel: 'sCancelAnna', sCancelAnna: 'sCancel', s13: 's14', s14: 's13', s15: 's13', s16: 's13', s17: 's13', sSkip: 's13' };
+  const STAGES = [
+    ['Big idea', 's1', 'The whole proposition on one screen: a free item, an optional good deed, less waste.'],
+    ['Anna lists a free item', 's2', 'Listing takes under a minute. There is no price field: every item is free.'],
+    ['Optional cause suggestion', 's4', 'The giver may suggest a cause. It is only a recommendation.'],
+    ['Daniel finds and requests it', 's6', 'A structured request replaces open-ended chat: time slot, checks and a short note.'],
+    ['Anna chooses a recipient', 's9', 'No ratings, scores or rankings. The giver simply picks a person and a time.'],
+    ['Pickup is scheduled', 's10', 'Reservation, reminders and an automatic backup queue cut no-shows.'],
+    ['Both confirm the handover', 's12', 'Both sides confirm in person. QR is optional and no payment is attached.'],
+    ["Anna's completion", 's13', 'The giver sees her impact and never learns whether the recipient donated.'],
+    ['Private donation invitation', 's14', 'Only after receipt, and only for Daniel: an optional invitation to give.'],
+    ['Change cause or decline', 's15', 'The recipient can follow the suggestion, choose another cause or skip.'],
+    ['Simulated one-tap donation', 's16', 'Paid directly to a verified charity partner. No wallet, no escrow.'],
+    ["Daniel's completion", 's17', 'Three impacts from one handover. The donation stays private: no badges or ranks.'],
+    ['One item, three impacts', 's18', 'Social, charitable and environmental value from a single free handover.']
+  ];
+  const CATS = { edu: 'Children and Education', health: 'Health', relief: 'Emergency Relief', community: 'Local Community', env: 'Environment', need: 'Where it is most needed' };
+  const REAL = ['edu', 'health', 'community', 'env'];
+  const CHARITIES = {
+    edu: [{ id: 'mclf', label: "Malmö Children's Learning Fund", desc: 'Homework clubs and school supplies across Malmö' }, { id: 'rb', label: 'Reading Bridges', desc: 'Books and reading mentors for children' }],
+    health: [{ id: 'chc', label: 'Community Health Circle', desc: 'Local health outreach and support' }, { id: 'cwb', label: 'Care Without Borders', desc: 'Access to basic care worldwide' }],
+    relief: [{ id: 'rrn', label: 'Rapid Relief Network', desc: 'Emergency supplies after disasters' }],
+    community: [{ id: 'nom', label: 'Neighbours of Malmö', desc: 'Community kitchens and meeting places' }],
+    env: [{ id: 'bst', label: 'Baltic Shore Trust', desc: 'Coastline clean-ups and restoration' }],
+    need: [{ id: 'vpp', label: 'Verified Partner Pool', desc: 'Directed to verified partners with the greatest current need' }]
+  };
+  const SLOTS = { t1: ['Tomorrow, 18:00–19:00', 'tomorrow, 18:00'], t2: ['Tomorrow, 19:00–20:00', 'tomorrow, 19:00'], t3: ['Saturday, 10:00–11:00', 'Saturday, 10:00'] };
+  const PAY = { apple: 'Apple Pay', google: 'Google Pay', card: 'Card' };
+
+  const fresh = () => ({
+    screen: 's1', annaCause: 'edu', slot: 't1', chk1: false, chk2: false,
+    msg: 'Hi Anna, I can collect tomorrow at 18:00. The desk would be for my daughter.',
+    pick: 'daniel', photo: 'front', annaOk: false, danielOk: false,
+    amount: null, other: '', dCat: null, charity: null, tmpCat: null, tmpCharity: null,
+    pay: 'apple', paying: false, toast: '', banner: '', chat: false, sofia: false
+  });
+  let S = fresh();
+  let timers = [];
+  let lastScreen = null;
+  const later = (fn, ms) => timers.push(setTimeout(fn, ms));
+
+  // ---------- Derived ----------
+  function derived() {
+    const a = S.annaCause;
+    const dCat = S.dCat || (REAL.includes(a) ? a : 'need');
+    const list = CHARITIES[dCat];
+    const charity = list.find((c) => c.id === S.charity) || list[0];
+    const isOther = S.amount === 'other';
+    const n = parseInt(S.other, 10);
+    const amountVal = isOther ? (n > 0 ? n : 0) : (S.amount || 0);
+    return {
+      dCat, charity, amountVal, isOther,
+      causeLabel: CATS[dCat],
+      causeTag: (REAL.includes(a) && dCat === a) || (a === 'platform' && dCat === 'need' && !S.dCat) ? 'suggested by Anna' : 'your choice',
+      suggestShow: a !== 'none',
+      suggestLabel: REAL.includes(a) ? CATS[a] : "Platform's choice",
+      suggestSentence: REAL.includes(a) ? `Anna suggests supporting ${CATS[a]} after the handover. This is entirely optional.` : 'Anna suggests supporting a cause chosen by the platform after the handover. This is entirely optional.',
+      inviteText: a === 'none' ? 'You may support a good cause, or simply continue without donating.' : REAL.includes(a) ? `Anna suggested supporting ${CATS[a]}. You may choose this cause, select another one or simply continue without donating.` : 'Anna suggested a cause chosen by the platform. You may choose this, select another cause or simply continue without donating.'
+    };
+  }
+
+  // ---------- Pieces ----------
+  const top = (title, extra = '') => `<div class="top"><button class="iconbtn" data-a="back" aria-label="Back">${I(P.back, 22, 2)}</button><span>${title}</span>${extra}</div>`;
+  const img = (view, h, free = true, extra = '') => `<div class="img" style="height:${h}px">${desk(view)}${free ? '<span class="free">FREE</span>' : ''}${extra}</div>`;
+  const opt = (on, action, inner, style = '') => `<button class="opt${on ? ' on' : ''}" data-a="${action}" aria-pressed="${on}" style="${style}"><span class="dot"></span>${inner}</button>`;
+  const feed = (icon, bg, fg, title, sub, action) => `<button class="feeditem" data-a="${action}"><span class="thumb" style="background:${bg};color:${fg}">${I(P[icon], 30, 1.6)}</span><span class="col" style="gap:4px;flex:1"><span style="font-weight:600">${title}</span><span class="sub">${sub}</span></span><span class="free">FREE</span></button>`;
+  const impact = (cls, icon, label, text) => `<div class="card row" style="padding:14px 16px;gap:14px"><span class="ic ${cls}">${I(P[icon])}</span><span class="col" style="flex:1">${label ? `<span class="lbl">${label}</span>` : ''}<span class="val">${text}</span></span></div>`;
+  const checkRow = (t) => `<div class="row" style="padding:14px 16px">${I(P.check, 20, 2.2, 'style="color:#1E7A4C"')}<span class="val">${t}</span></div>`;
+
+  // ---------- Screens ----------
+  const SCREENS = {
+    s1: () => `<div class="scroll" style="padding:26px 24px 16px;gap:22px">
+      <div class="row" style="justify-content:space-between"><span class="row" style="gap:8px">${LOGO()}<span style="font-family:var(--display);font-weight:700;font-size:17px">[PROJECT NAME]</span></span><span style="font-size:13px;font-weight:600;color:var(--green-d)">Pass the good forward.</span></div>
+      <h1 style="font-size:35px;line-height:1.06">Give an item away. Help someone directly. Inspire another good deed.</h1>
+      <p style="font-size:17px;line-height:1.5;color:var(--ink2)">Useful items are passed from person to person for free. After receiving an item, the recipient may voluntarily support a good cause.</p>
+      <div class="col" style="gap:10px">
+        ${impact('ic-social', 'social', '', '<b>A useful item received for free</b>')}
+        ${impact('ic-give', 'give', '', '<b>An optional donation to a good cause</b>')}
+        ${impact('ic-env', 'env', '', '<b>An item kept in use and out of waste</b>')}
+      </div></div>
+      <div class="foot"><button class="btn btn-primary" data-a="go:s2">See how it works</button><span style="text-align:center;font-size:13px;color:#5E6878">2-minute interactive demo</span></div>`,
+
+    s2: () => `<div class="scroll" style="padding:22px 20px 20px;gap:20px">
+      <div class="row" style="justify-content:space-between;align-items:flex-end"><div class="col" style="gap:4px"><h1 style="font-size:30px">Hi Anna</h1><span class="sub row" style="gap:4px">${I(P.pin, 16)}Västra Hamnen, Malmö</span></div><span class="pill" style="background:var(--green-t);color:var(--green-d)">3 items passed on</span></div>
+      <button data-a="go:s3" style="display:flex;flex-direction:column;align-items:flex-start;gap:14px;width:100%;padding:22px;border:0;border-radius:22px;background:var(--green);color:#fff;text-align:left;cursor:pointer">
+        <span style="width:48px;height:48px;border-radius:24px;background:rgba(255,255,255,.18);display:inline-flex;align-items:center;justify-content:center">${I(P.plus, 26, 2)}</span>
+        <span style="font-family:var(--display);font-size:26px;font-weight:700">Give an item</span>
+        <span style="font-size:15px;line-height:1.4;color:#E6F2EB">Photo, a few details, done. Someone nearby collects it for free.</span></button>
+      <div class="col" style="gap:10px"><div class="row" style="justify-content:space-between;align-items:baseline"><h2 style="font-size:19px;font-weight:600">Free near you</h2><span class="sub">Malmö</span></div>
+        ${feed('lamp', '#E6ECF5', '#26406A', 'Floor lamp', 'Möllevången · 2.1 km', 'hint:give')}
+        ${feed('games', '#FBE7DE', '#A8461F', 'Board games, set of 3', 'Ribersborg · 1.2 km', 'hint:give')}
+        ${feed('pot', '#E3F0E8', '#155C39', 'Ceramic plant pots', 'Västra Hamnen · 0.4 km', 'hint:give')}
+      </div></div>`,
+
+    s3: () => `${top('Give an item', '<span class="sub" style="margin-left:auto;padding-right:8px;font-weight:400">Step 1 of 2</span>')}
+      <div class="scroll" style="padding:6px 20px 20px;gap:14px">
+        ${img('front', 196)}
+        <div class="row" style="gap:8px"><div class="tbtn" style="cursor:default">${desk('side')}</div><div class="tbtn" style="cursor:default">${desk('detail')}</div><button data-a="hint:photo" aria-label="Add photo" style="width:72px;height:56px;border-radius:12px;border:1.5px dashed #B8B1A4;background:transparent;color:var(--muted);display:inline-flex;align-items:center;justify-content:center;cursor:pointer">${I(P.plus, 22, 2)}</button></div>
+        <div class="row" style="justify-content:space-between;padding:14px 16px;border-radius:14px;background:var(--green-t)"><span style="font-weight:700;color:var(--green-d)">Price</span><span style="font-family:var(--display);font-size:22px;font-weight:700;color:var(--green-d)">Free</span></div>
+        <div class="card rows" style="display:flex;flex-direction:column">
+          <div class="col"><span class="lbl">Title</span><span class="val" style="font-weight:600">Children's desk and chair</span></div>
+          <div style="padding:0"><div class="col" style="flex:1;padding:12px 16px;border-right:1px solid #EEEAE2"><span class="lbl">Category</span><span class="val">Children / Furniture</span></div><div class="col" style="flex:1;padding:12px 16px"><span class="lbl">Condition</span><span class="val">Good</span></div></div>
+          <div class="col"><span class="lbl">Description</span><span class="val">Used but in good condition. Our daughter has outgrown it.</span></div>
+          <div style="padding:0"><div class="col" style="flex:1;padding:12px 16px;border-right:1px solid #EEEAE2"><span class="lbl">Location</span><span class="val">Västra Hamnen, Malmö</span></div><div class="col" style="flex:1;padding:12px 16px"><span class="lbl">Handover</span><span class="val">Pickup only</span></div></div>
+          <div class="col" style="gap:8px"><span class="lbl">Available times</span><div class="row" style="gap:8px;flex-wrap:wrap"><span class="pill" style="background:#F1EEE8;font-weight:600">Tomorrow 18:00–20:00</span><span class="pill" style="background:#F1EEE8;font-weight:600">Saturday 10:00–13:00</span></div></div>
+        </div></div>
+      <div class="foot"><button class="btn btn-primary" data-a="go:s4">Continue</button></div>`,
+
+    s4: () => {
+      const opts = [['edu', 'Children and Education'], ['health', 'Health'], ['community', 'Local Community'], ['env', 'Environment'], ['platform', 'Let the platform suggest a cause'], ['none', 'No recommendation']];
+      return `${top('Give an item', '<span class="sub" style="margin-left:auto;padding-right:8px;font-weight:400">Step 2 of 2</span>')}
+      <div class="scroll" style="padding:6px 20px 20px;gap:16px">
+        <span class="pill" style="align-self:flex-start;background:var(--coral-t);color:var(--coral-d);letter-spacing:.06em">OPTIONAL</span>
+        <h1 style="font-size:28px;line-height:1.12">Would you like to suggest a good cause?</h1>
+        <p class="sub" style="font-size:16px">This is only a suggestion. The recipient can choose another cause or decide not to donate.</p>
+        <div class="col" style="gap:8px">${opts.map((o) => opt(S.annaCause === o[0], 'annaCause:' + o[0], `<span>${o[1]}</span>`)).join('')}</div>
+      </div>
+      <div class="foot"><button class="btn btn-primary" data-a="go:s5">Publish free item</button></div>`;
+    },
+
+    s5: (d) => `<div class="scroll" style="padding:22px 20px 20px;gap:18px">
+        <div class="row"><span style="width:44px;height:44px;border-radius:22px;background:var(--green);color:#fff;display:inline-flex;align-items:center;justify-content:center;flex:none">${I(P.check, 24, 2.4)}</span><h1 style="font-size:22px;line-height:1.2">Your item is now available to people nearby.</h1></div>
+        <div class="card" style="overflow:hidden">${img('front', 210).replace('border-radius:18px', '')}
+          <div class="col" style="padding:16px;gap:10px">
+            <div class="row" style="justify-content:space-between;gap:8px"><h2 style="font-size:20px;font-weight:600">Children's desk and chair</h2><span class="pill" style="background:var(--green-t);color:var(--green-d)"><span class="rdot"></span>Available</span></div>
+            <span class="sub">Västra Hamnen, Malmö · Pickup only</span><span class="sub">Tomorrow 18:00–20:00 · Saturday 10:00–13:00</span>
+            ${d.suggestShow ? `<span class="cause">${I(P.give, 16, 2)}Suggested cause: ${d.suggestLabel}</span>` : ''}
+          </div></div></div>
+      <div class="foot"><span class="lbl" style="text-align:center">Presentation action</span><button class="btn btn-primary" data-a="go:s6">${I(P.swap, 20, 2)}Switch to recipient</button></div>`,
+
+    s6: (d) => `<div class="scroll" style="padding:20px;gap:14px">
+        <div class="col" style="gap:4px"><h1 style="font-size:28px">Free near you</h1><span class="sub">Malmö · within 5 km</span></div>
+        <button class="card" data-a="go:s7" style="display:flex;flex-direction:column;width:100%;padding:0;border:0;overflow:hidden;text-align:left;cursor:pointer;color:var(--ink)">
+          <div class="img" style="height:180px;width:100%;border-radius:0">${desk('front')}<span class="free">FREE</span><span class="pill" style="position:absolute;top:10px;right:12px;background:#fff;height:28px">New</span></div>
+          <div class="col" style="padding:14px 16px 16px;gap:6px"><span style="font-family:var(--display);font-size:19px;font-weight:600">Children's desk and chair</span><span class="sub">1.8 km away · Pickup tomorrow</span>${d.suggestShow ? `<span class="cause">Suggested cause: ${d.suggestLabel}</span>` : ''}</div>
+        </button>
+        ${feed('shelf', '#E6ECF5', '#26406A', 'Bookshelf, white', '2.4 km · Pickup Saturday', 'hint:desk')}
+        ${feed('kettle', '#FBE7DE', '#A8461F', 'Electric kettle', '1.1 km · Pickup today', 'hint:desk')}
+        ${feed('helmet', '#E3F0E8', '#155C39', "Kids' bike helmet", '3.0 km · Pickup tomorrow', 'hint:desk')}
+      </div>`,
+
+    s7: (d) => {
+      const ph = [['front', 'Desk and chair'], ['side', 'Chair tucked in'], ['detail', 'Close-up of drawer']];
+      const fact = (icon, lbl, val, extra = '') => `<div><span style="color:var(--muted);flex:none;margin-top:2px">${I(P[icon])}</span><span class="col"><span class="lbl">${lbl}</span><span class="val">${val}</span>${extra}</span></div>`;
+      return `${top('Item details')}
+      <div class="scroll" style="padding:4px 20px 20px;gap:14px">
+        ${img(S.photo, 220)}
+        <div class="row" style="gap:8px">${ph.map((p) => `<button class="tbtn${S.photo === p[0] ? ' on' : ''}" data-a="photo:${p[0]}" aria-label="${p[1]}">${desk(p[0])}</button>`).join('')}</div>
+        <div class="col" style="gap:6px"><h1 style="font-size:25px">Children's desk and chair</h1><span class="sub" style="font-size:15px">Good, with minor signs of use. Our daughter has outgrown it.</span></div>
+        <div class="card rows" style="display:flex;flex-direction:column">
+          ${fact('ruler', 'Dimensions', 'Desk 70 × 50 cm, 55 cm high · Chair seat 32 cm high')}
+          ${fact('box', 'Pickup requirements', 'Pickup only. Fits in most cars with the rear seats folded.')}
+          ${fact('pin', 'Approximate location', 'Västra Hamnen, Malmö · 1.8 km', '<span class="sub">Exact address is shared once a pickup is confirmed.</span>')}
+          ${fact('clock', 'Available', 'Tomorrow 18:00–20:00 · Saturday 10:00–13:00')}
+        </div>
+        <div class="row" style="padding:4px 2px"><span class="pav" style="background:var(--green-t);color:var(--green-d)">A</span><span class="col"><span style="font-weight:700">Given by Anna</span><span class="sub row" style="gap:4px"><span style="color:var(--green)">${I(P.shield, 16, 2)}</span>Phone verified</span></span></div>
+        ${d.suggestShow ? `<div class="row" style="align-items:flex-start;padding:16px;border-radius:16px;background:#FBEFE9;border:1px solid #F3D5C7"><span class="ic ic-give" style="background:#fff">${I(P.give)}</span><p style="font-size:15px;line-height:1.45;color:#3B2A22">${d.suggestSentence}</p></div>` : ''}
+      </div>
+      <div class="foot"><button class="btn btn-primary" data-a="go:s8">Request this item</button></div>`;
+    },
+
+    s8: () => `${top('Request the desk')}
+      <div class="scroll" style="padding:4px 20px 20px;gap:16px">
+        <h1 style="font-size:26px">When can you collect it?</h1>
+        <div class="col" style="gap:8px">${Object.keys(SLOTS).map((k) => opt(S.slot === k, 'slot:' + k, `<span>${SLOTS[k][0]}</span>`)).join('')}</div>
+        <div class="col" style="gap:4px">
+          <label class="row" style="min-height:48px;font-size:16px;cursor:pointer"><input class="chk" type="checkbox" data-a="chk1" ${S.chk1 ? 'checked' : ''}><span>I have checked the dimensions.</span></label>
+          <label class="row" style="min-height:48px;font-size:16px;cursor:pointer"><input class="chk" type="checkbox" data-a="chk2" ${S.chk2 ? 'checked' : ''}><span>I can arrange transport.</span></label>
+        </div>
+        <label class="col" style="gap:8px"><span class="lbl">Message to Anna (optional)</span>
+          <textarea id="msg" rows="3" style="width:100%;border-radius:14px;border:1.5px solid #D6D0C4;background:#fff;padding:12px 14px;font-size:16px;color:var(--ink);resize:none;line-height:1.45">${esc(S.msg)}</textarea></label>
+      </div>
+      <div class="foot"><button class="btn btn-primary" data-a="sendRequest" ${S.chk1 && S.chk2 ? '' : 'disabled'}>Send request</button><span style="text-align:center;font-size:14px;color:var(--muted)">No payment or donation is required.</span></div>`,
+
+    s9: () => {
+      const reqs = [
+        { id: 'daniel', name: 'Daniel', ver: 'Phone verified', time: SLOTS[S.slot][1], dist: '1.8 km', msg: '“The desk would be for my daughter.”' },
+        { id: 'sofia', name: 'Sofia', ver: 'ID verified', time: 'tomorrow, 19:00', dist: '3.2 km', msg: '“I can come by car.”' },
+        { id: 'omar', name: 'Omar', ver: 'Phone verified', time: 'Saturday, 10:00', dist: '0.6 km', msg: '' }];
+      const pick = reqs.find((r) => r.id === S.pick) || reqs[0];
+      return `<div class="scroll" style="padding:20px;gap:14px">
+        <div class="row"><div class="img" style="width:56px;height:56px;border-radius:14px">${desk('front')}</div><div class="col"><span class="sub">Children's desk and chair</span><h1 style="font-size:23px">3 people asked for it</h1></div></div>
+        <p class="sub">Shown in the order requests arrived. No scores, ratings or rankings.</p>
+        <div class="col" style="gap:10px">${reqs.map((r) => opt(S.pick === r.id, 'pick:' + r.id, `<span class="col" style="gap:5px;flex:1">
+          <span class="row" style="justify-content:space-between;gap:8px"><span style="font-weight:700;font-size:17px">${r.name}</span><span class="sub">${r.dist}</span></span>
+          <span class="sub row" style="gap:4px;color:var(--green-d);font-weight:600">${I(P.shield, 15, 2)}${r.ver}</span>
+          <span class="sub">Can collect ${r.time}</span>${r.msg ? `<span style="font-size:15px;line-height:1.4">${r.msg}</span>` : ''}</span>`, 'align-items:flex-start;padding:14px 16px')).join('')}</div>
+      </div>
+      <div class="foot"><button class="btn btn-primary" data-a="reserve">Reserve for ${pick.name}</button></div>`;
+    },
+
+    s10: () => `<div class="scroll" style="padding:20px;gap:14px">
+        <span class="pill" style="align-self:flex-start;background:var(--green);color:#fff">${I(P.check, 14, 2.6)}Reserved</span>
+        <h1 style="font-size:26px">Reserved for Daniel</h1>
+        <div class="card rows" style="display:flex;flex-direction:column">
+          <div><span style="color:var(--muted)">${I(P.cal)}</span><span class="col"><span class="lbl">Pickup</span><span class="val" style="font-weight:600">${SLOTS[S.slot][0]}</span></span></div>
+          <div><span style="color:var(--muted)">${I(P.clock)}</span><span class="val">Daniel confirms the arrangement by tomorrow at 12:00.</span></div>
+          <div><span style="color:var(--muted)">${I(P.bell)}</span><span class="val">You both get a reminder one hour before.</span></div>
+        </div>
+        <div class="card col" style="padding:16px;gap:12px">
+          <div class="row" style="justify-content:space-between"><span style="font-weight:700">Backup queue</span><span class="sub">2 people</span></div>
+          <div class="row" style="gap:10px"><span class="pav" style="width:36px;height:36px;font-size:15px;background:var(--blue-t);color:var(--blue-d)">S</span><span style="flex:1">Sofia · Tomorrow, 19:00</span><span class="pill" style="background:var(--blue-t);color:var(--blue-d);height:26px">Next</span></div>
+          <div class="row" style="gap:10px"><span class="pav" style="width:36px;height:36px;font-size:15px;background:var(--blue-t);color:var(--blue-d)">O</span><span style="flex:1">Omar · Saturday, 10:00</span></div>
+          <p class="sub" style="padding-top:10px;border-top:1px solid #EEEAE2">If the pickup is cancelled, the next interested person can be contacted automatically.</p>
+        </div></div>
+      <div class="foot"><button class="btn btn-primary" data-a="go:s11">Confirm pickup arrangement</button></div>`,
+
+    s11: () => `<div class="scroll" style="padding:18px 20px 20px;gap:14px">
+        <div class="row" style="justify-content:space-between;gap:8px"><h1 style="font-size:26px">Your pickup</h1><span class="pill" style="background:var(--green-t);color:var(--green-d)">Free · nothing to pay</span></div>
+        <div class="card" style="overflow:hidden">
+          <svg viewBox="0 0 350 150" width="100%" height="150" role="img" aria-label="Map of Västra Hamnen with the pickup point marked" style="display:block"><rect width="350" height="150" fill="#EFEBE3"/><path d="M0 0h110c-10 40-30 70-60 95L0 120z" fill="#D5E5EE"/><rect x="210" y="90" width="80" height="44" rx="6" fill="#DCEBDD"/><path d="M60 150L170 0M120 150l70-150M0 70h350M150 110h200M260 0v150" stroke="#fff" stroke-width="7" fill="none"/><path d="M60 150L170 0M0 70h350" stroke="#fff" stroke-width="11" fill="none"/><circle cx="205" cy="70" r="22" fill="#D9663F" opacity=".18"/><path d="M205 76s-12-10.5-12-19.5a12 12 0 0 1 24 0c0 9-12 19.5-12 19.5z" fill="#C4552F"/><circle cx="205" cy="56.5" r="4.5" fill="#fff"/></svg>
+          <div class="col" style="padding:14px 16px;gap:4px"><span style="font-weight:700;font-size:17px">Exempelgatan 12, Västra Hamnen</span><span class="sub">211 19 Malmö · Shared now that the pickup is confirmed</span>
+          <span class="row" style="gap:6px;margin-top:6px;font-weight:600"><span style="color:var(--green)">${I(P.cal, 18, 2)}</span>${SLOTS[S.slot][0]}</span></div>
+        </div>
+        <div class="grid2">
+          <button class="qa" data-a="qa:there"><span style="color:var(--green)">${I(P.check, 18, 2)}</span>I'll be there</button>
+          <button class="qa" data-a="qa:late"><span style="color:var(--muted)">${I(P.clock, 18, 2)}</span>Running 15 minutes late</button>
+          <button class="qa" data-a="qa:resched"><span style="color:var(--muted)">${I(P.cal, 18, 2)}</span>Need to reschedule</button>
+          <button class="qa" data-a="go:sCancel"><span style="color:var(--muted)">${I(P.x, 18, 2)}</span>Cancel request</button>
+        </div>
+        <button class="qa" data-a="chat" style="width:100%"><span style="color:var(--muted)">${I(P.msg, 18, 2)}</span><span style="flex:1">Private message to Anna</span><span class="sub">${S.chat ? 'Hide' : '2 messages'}</span></button>
+        ${S.chat ? `<div class="col" style="gap:8px;animation:ppDrop .2s ease both"><div style="align-self:flex-end;max-width:82%;padding:10px 14px;border-radius:16px 16px 4px 16px;background:var(--green);color:#fff;font-size:15px;line-height:1.4">${esc(S.msg)}</div><div class="card" style="align-self:flex-start;max-width:82%;padding:10px 14px;border-radius:16px 16px 16px 4px;font-size:15px;line-height:1.4">Great, see you then. Ring the bell at the side entrance.</div></div>` : ''}
+      </div>
+      <div class="foot"><button class="btn btn-primary" data-a="go:s12">I've arrived</button></div>`,
+
+    sCancel: () => `<div class="scroll" style="padding:28px 20px 20px;gap:16px">
+        <span style="width:52px;height:52px;border-radius:26px;background:#E9E5DD;color:var(--ink2);display:inline-flex;align-items:center;justify-content:center">${I(P.x, 24, 2)}</span>
+        <h1 style="font-size:27px">Request cancelled</h1>
+        <p style="font-size:17px;line-height:1.5;color:var(--ink2)">No problem. The desk goes back to the people who are waiting for it.</p>
+        <div class="card" style="display:flex;flex-direction:column">${checkRow('Anna is notified automatically')}<div style="border-top:1px solid #EEEAE2"></div>${checkRow('The next person in the queue can be contacted')}<div style="border-top:1px solid #EEEAE2"></div>${checkRow('No penalty and no public rating')}</div>
+      </div>
+      <div class="foot"><button class="btn btn-primary" data-a="go:sCancelAnna">${I(P.swap, 20, 2)}See Anna's view</button><button class="btn btn-ghost" data-a="go:s11">Undo and keep my pickup</button></div>`,
+
+    sCancelAnna: () => `<div class="scroll" style="padding:22px 20px 20px;gap:14px">
+        <div class="card row" style="padding:14px 16px;align-items:flex-start"><span class="ic ic-social">${I(P.bell)}</span><span class="col"><span style="font-weight:700">Daniel can't make it</span><span class="sub">The pickup tomorrow is cancelled. Your desk is available again.</span></span></div>
+        <h1 style="font-size:25px">Next in the queue</h1>
+        <div class="card col" style="padding:16px;gap:6px">
+          <div class="row" style="justify-content:space-between"><span style="font-weight:700;font-size:17px">Sofia</span><span class="sub">3.2 km</span></div>
+          <span class="sub row" style="gap:4px;color:var(--green-d);font-weight:600">${I(P.shield, 15, 2)}ID verified</span>
+          <span class="sub">Can collect tomorrow, 19:00</span><span style="font-size:15px">“I can come by car.”</span>
+          <button class="mini" data-a="sofia" ${S.sofia ? 'disabled' : ''} style="margin-top:8px">${S.sofia ? 'Reserved for Sofia' : 'Reserve for Sofia'}</button>
+        </div>
+        <p class="sub">Nobody is penalised for cancelling. The queue simply moves on.</p>
+      </div>
+      <div class="foot"><button class="btn btn-secondary" data-a="go:s11">Back to the main demo</button></div>`,
+
+    s12: () => {
+      const both = S.annaOk && S.danielOk;
+      const person = (init, bg, fg, name, role, ok, action, label) => `<div class="card row" style="padding:14px 16px"><span class="pav" style="background:${bg};color:${fg}">${init}</span><span class="col" style="flex:1"><span style="font-weight:700">${name}</span><span class="sub">${role}</span></span><button class="mini" data-a="${action}" ${ok ? 'disabled' : ''}>${ok ? 'Confirmed' : label}</button></div>`;
+      return `<div class="scroll" style="padding:22px 20px 20px;gap:14px">
+        <h1 style="font-size:28px">Confirm the handover</h1>
+        <p class="sub" style="font-size:16px">Both people confirm in person. No payment is connected to this confirmation.</p>
+        ${person('A', 'var(--green-t)', 'var(--green-d)', 'Anna', 'Giver', S.annaOk, 'annaGave', 'I gave the item')}
+        ${person('D', 'var(--coral-t)', 'var(--coral-d)', 'Daniel', 'Recipient', S.danielOk, 'danielGot', 'I received the item')}
+        <button class="qa" data-a="qr" style="width:100%;min-height:60px"><span style="color:var(--muted)">${I(P.qr, 22)}</span><span class="col" style="flex:1"><span>Scan Anna's QR code</span><span class="sub" style="font-weight:500">Optional: confirms both sides in one step</span></span></button>
+        ${both ? `<div class="row" style="padding:16px;border-radius:16px;background:var(--green);color:#fff;animation:ppDrop .22s ease both">${I(P.check, 26, 2.4)}<span style="font-size:16px;font-weight:600;line-height:1.35">Both sides confirmed. The handover is complete.</span></div>` : ''}
+      </div>
+      <div class="foot"><button class="btn btn-primary" data-a="handover">${both ? 'Continue' : 'Confirm both (demo)'}</button></div>`;
+    },
+
+    s13: () => `<div class="scroll" style="padding:22px 20px 20px;gap:18px">
+        ${img('side', 200, false)}
+        <h1 style="font-size:31px;line-height:1.08">Your desk has a new home.</h1>
+        <p style="font-size:17px;line-height:1.5;color:var(--ink2)">You helped another family and kept a useful item in circulation.</p>
+        <div class="grid3">
+          <div class="card col" style="padding:14px 12px;gap:4px"><span style="font:700 26px var(--display)">1</span><span class="sub" style="font-size:13px">item passed on</span></div>
+          <div class="card col" style="padding:14px 12px;gap:4px"><span style="font:700 26px var(--display);color:var(--green-d)">~12 kg</span><span class="sub" style="font-size:13px">kept in use (estimate)</span></div>
+          <div class="card col" style="padding:14px 12px;gap:4px"><span style="color:var(--green)">${I(P.check, 30, 2.4)}</span><span class="sub" style="font-size:13px">Handover completed</span></div>
+        </div>
+        <p class="sub" style="text-align:center">That's 4 items you've passed on.</p>
+      </div>
+      <div class="foot"><button class="btn btn-primary" data-a="annaDone">Done</button></div>`,
+
+    s14: (d) => {
+      const can = d.amountVal > 0;
+      return `<div class="scroll" style="padding:20px 20px 16px;gap:16px">
+        <span class="pill" style="align-self:flex-start;background:#E9E5DD;color:var(--ink2)">${I(P.lock, 14, 2)}Only you can see this</span>
+        <h1 style="font-size:28px;line-height:1.1">The item was given freely. Pass the good forward?</h1>
+        <p style="font-size:16px;line-height:1.5;color:var(--ink2)">${d.inviteText}</p>
+        <div class="card row" style="padding:14px 16px"><span class="ic ic-give">${I(P.give)}</span><span class="col" style="flex:1"><span style="font-weight:700">${d.causeLabel} <span style="font-weight:500;color:var(--coral-d)">— ${d.causeTag}</span></span><span class="sub">${d.charity.label} · Verified partner</span></span></div>
+        <div class="grid3">${[50, 100, 200].map((v) => `<button class="amt${S.amount === v ? ' on' : ''}" data-a="amount:${v}" aria-pressed="${S.amount === v}">SEK ${v}</button>`).join('')}
+          <button class="amt${d.isOther ? ' on' : ''}" data-a="amount:other" aria-pressed="${d.isOther}" style="grid-column:1/-1">Other amount</button></div>
+        ${d.isOther ? `<label class="row" style="gap:10px;padding:0 16px;min-height:54px;border-radius:14px;border:1.5px solid var(--green);background:#fff"><span style="font-weight:700">SEK</span><input id="other" type="number" min="1" inputmode="numeric" placeholder="Enter amount" value="${esc(S.other)}" style="flex:1;border:0;outline:none;font-size:18px;font-weight:600;color:var(--ink);background:transparent;min-width:0"></label>` : ''}
+        <p class="sub row" style="gap:8px;align-items:flex-start"><span style="flex:none;margin-top:2px">${I(P.lock, 16, 2)}</span>Your choice is private. Anna will not know whether you donated.</p>
+      </div>
+      <div class="foot" style="gap:4px"><button class="btn btn-primary" id="donateBtn" data-a="donate" ${can ? '' : 'disabled'}>${can ? 'Donate SEK ' + d.amountVal : 'Choose an amount to donate'}</button>
+        <div class="grid2" style="gap:4px"><button class="btn btn-ghost" data-a="openCause">Choose another cause</button><button class="btn btn-ghost" data-a="go:sSkip">Not now</button></div></div>`;
+    },
+
+    s15: (d) => {
+      const a = S.annaCause;
+      const tmpCat = S.tmpCat || d.dCat;
+      const tList = CHARITIES[tmpCat];
+      const tmpCharity = (tList.find((c) => c.id === S.tmpCharity) || (tmpCat === d.dCat ? d.charity : tList[0])).id;
+      return `${top('Choose a cause')}
+      <div class="scroll" style="padding:4px 20px 20px;gap:14px">
+        <p class="sub" style="font-size:15px">Every cause is served by verified charity partners. Anna's suggestion is marked; you are free to choose any.</p>
+        <div class="col" style="gap:8px">${['edu', 'health', 'relief', 'community', 'env', 'need'].map((k) => opt(tmpCat === k, 'tmpCat:' + k, `<span style="flex:1">${k === 'need' ? 'Let the platform direct it where most needed' : CATS[k]}</span>${k === a ? '<span style="font-size:12px;font-weight:700;color:var(--coral-d)">Anna\'s suggestion</span>' : ''}`, 'min-height:52px')).join('')}</div>
+        <span class="lbl" style="margin-top:6px">Verified partners</span>
+        <div class="col" style="gap:8px">${tList.map((c) => opt(tmpCharity === c.id, 'tmpCharity:' + c.id, `<span class="col" style="gap:3px"><span style="font-weight:700">${c.label}</span><span class="sub">${c.desc}</span><span class="row" style="gap:4px;font-size:12px;font-weight:700;color:var(--green-d)">${I(P.shield, 13, 2.2)}Verified partner · fictional example</span></span>`, 'align-items:flex-start')).join('')}</div>
+      </div>
+      <div class="foot"><button class="btn btn-primary" data-a="causeContinue" data-v="${tmpCat}|${tmpCharity}">Continue</button></div>`;
+    },
+
+    s16: (d) => `${top('Your donation')}
+      <div class="scroll" style="padding:4px 20px 20px;gap:14px">
+        <div class="card" style="display:flex;flex-direction:column">
+          <div class="row" style="justify-content:space-between;align-items:baseline;padding:16px;border-bottom:1px solid #EEEAE2"><span class="lbl">Donation</span><span style="font:700 26px var(--display)">SEK ${d.amountVal}</span></div>
+          <div class="col" style="padding:14px 16px;border-bottom:1px solid #EEEAE2"><span class="lbl">To</span><span class="val" style="font-weight:600">${d.charity.label}</span><span class="sub">${d.causeLabel}</span></div>
+          <div class="row" style="gap:10px;padding:14px 16px;align-items:flex-start"><span style="color:var(--green);flex:none;margin-top:2px">${I(P.shield, 18, 2)}</span><span class="sub">Processing handled by a verified donation partner. Paid directly to the charity.</span></div>
+        </div>
+        <span class="lbl">Pay with</span>
+        <div class="col" style="gap:8px">${Object.keys(PAY).map((k) => opt(S.pay === k, 'pay:' + k, `<span style="flex:1;font-weight:600">${PAY[k]}</span>`)).join('')}</div>
+        <p class="sub row" style="gap:8px;align-items:flex-start"><span style="flex:none;margin-top:2px">${I(P.lock, 16, 2)}</span>Simulated payment for this demo. Anna is never told.</p>
+      </div>
+      <div class="foot"><button class="btn btn-primary" data-a="confirmPay">Confirm donation</button></div>
+      ${S.paying ? `<div class="sheetwrap"><div class="sheet"><span style="font-weight:700;font-size:17px">${PAY[S.pay]}</span>${S.paying === 'done' ? `<span style="width:52px;height:52px;border-radius:26px;background:var(--green);color:#fff;display:inline-flex;align-items:center;justify-content:center">${I(P.check, 28, 2.6)}</span>` : '<div class="spin"></div>'}<span class="sub" style="font-size:15px">${S.paying === 'done' ? 'Donation confirmed' : 'Confirming securely…'}</span><span style="font-size:14px;color:var(--ink2)">SEK ${d.amountVal} to ${d.charity.label}</span></div></div>` : ''}`,
+
+    s17: (d) => `<div class="scroll" style="padding:22px 20px 20px;gap:14px">
+        <h1 style="font-size:30px;line-height:1.08">Thank you. You passed the good forward.</h1>
+        ${impact('ic-social', 'social', 'Social', 'You received a useful desk free of charge.')}
+        ${impact('ic-give', 'give', 'Charitable', `You voluntarily donated SEK ${d.amountVal} to ${d.causeLabel}.`)}
+        ${impact('ic-env', 'env', 'Environmental', 'The desk remains in use and is less likely to become waste.')}
+        <p class="sub row" style="gap:8px;justify-content:center">${I(P.lock, 16, 2)}Your donation remains private.</p>
+        <div class="row" style="gap:8px;justify-content:center;flex-wrap:wrap"><span class="pill" style="background:#E9E5DD;color:var(--ink2)">1 item reused</span><span class="pill" style="background:#E9E5DD;color:var(--ink2)">First completed handover</span></div>
+      </div>
+      <div class="foot"><button class="btn btn-primary" data-a="go:s18">Finish demo</button></div>`,
+
+    sSkip: () => `<div class="scroll" style="padding:28px 20px 20px;gap:16px">
+        <h1 style="font-size:30px;line-height:1.08">No problem. The item was free and remains free.</h1>
+        <p style="font-size:17px;line-height:1.5;color:var(--ink2)">Nothing changes for you: same access, same profile, and you won't be asked again for this item.</p>
+        ${impact('ic-social', 'social', '', 'You received a useful desk free of charge.')}
+        ${impact('ic-env', 'env', '', 'The desk stays in use and out of waste.')}
+      </div>
+      <div class="foot"><button class="btn btn-primary" data-a="go:s18">Finish demo</button><button class="btn btn-ghost" data-a="go:s14">Back to the donation screen</button></div>`,
+
+    s18: () => {
+      const arr = `<span style="color:#8B97AD">${I(P.arrow, 16, 2)}</span>`;
+      const num = (n, bg, fg, t) => `<div class="row" style="align-items:flex-start"><span style="width:30px;height:30px;border-radius:15px;background:${bg};color:${fg};display:inline-flex;align-items:center;justify-content:center;font-weight:700;flex:none">${n}</span><span style="font-size:16px;line-height:1.4;padding-top:4px">${t}</span></div>`;
+      return `<div class="scroll" style="padding:24px 22px 20px;gap:20px">
+        <span style="font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#8FD8AE">For investors and partners</span>
+        <h1 style="font-size:32px;line-height:1.06">One free item. Three forms of impact.</h1>
+        <div class="row" style="flex-wrap:wrap;gap:6px"><span class="pill dpill">Giver</span>${arr}<span class="pill" style="background:var(--green);color:#fff">Free item</span>${arr}<span class="pill dpill">Recipient</span>${arr}<span class="pill" style="color:#F6B79C;border:1.5px dashed #F6B79C">Optional donation</span>${arr}<span class="pill" style="background:#F6B79C;color:var(--ink)">Good cause</span></div>
+        <div class="col" style="gap:10px">${num(1, '#2C3D5E', '#BFD0F0', 'Direct social value')}${num(2, '#4A3229', '#F6B79C', 'New charitable giving triggered by gratitude')}${num(3, '#1D4A36', '#8FD8AE', 'Longer product life and reduced waste')}</div>
+        <p style="font-family:var(--display);font-size:20px;line-height:1.3;font-weight:500;padding:16px 0;border-top:1px solid #2E3D5C;border-bottom:1px solid #2E3D5C">A global P2P infrastructure for giving useful items away and turning successful handovers into voluntary charitable action.</p>
+        <div class="col" style="gap:10px"><span style="font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#A9B4C8">Potential institutional partners</span>
+          <div class="row" style="flex-wrap:wrap;gap:6px">${['Municipalities', 'Employers', 'Universities', 'Residential communities', 'Relocation providers', 'Charitable foundations', 'Existing marketplaces'].map((p) => `<span class="pill dpill">${p}</span>`).join('')}</div></div>
+        <p style="font-size:15px;line-height:1.55;color:#C9D1DE">The behaviour already exists: people give useful things away every day. The opportunity is to make the handover more reliable, measure the impact and create an entirely new moment for voluntary giving.</p>
+      </div>
+      <div class="foot"><button class="btn btn-light" data-a="go:s19">View impact model</button><button class="btn btn-outline-light" data-a="restart">Restart demo</button></div>`;
+    },
+
+    s19: (d) => {
+      const m = (lbl, c, f, demo) => `<div class="mdl"><span style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:${c}">${lbl}</span><span style="font-size:16px;line-height:1.4">${f}</span><span style="font-size:14px;color:#A9B4C8">${demo}</span></div>`;
+      return `<div class="top"><button class="iconbtn" data-a="back" aria-label="Back to summary">${I(P.back, 22, 2)}</button><span>Impact model</span></div>
+      <div class="scroll" style="padding:4px 22px 20px;gap:16px">
+        <h1 style="font-size:26px;line-height:1.1">Every completed handover is a measurable unit of impact.</h1>
+        <div class="col" style="gap:10px">
+          ${m('Social', '#BFD0F0', 'People helped = completed handovers', 'This demo: 1 desk, received free')}
+          ${m('Charitable', '#F6B79C', 'New giving = handovers × share who donate × average gift', `This demo: SEK ${d.amountVal > 0 ? d.amountVal : 100}, voluntary`)}
+          ${m('Environmental', '#8FD8AE', 'Kept in use = handovers × average item weight', 'This demo: ~12 kg (estimate)')}
+        </div>
+        <div class="col" style="gap:0;border-top:1px solid #2E3D5C">
+          <span style="font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#A9B4C8;padding:14px 0 6px">Malmö pilot inputs</span>
+          <div class="kv"><span>Completed handovers per month</span><span>[PILOT TARGET]</span></div>
+          <div class="kv"><span>Share of recipients who donate</span><span>[TO MEASURE]</span></div>
+          <div class="kv"><span>Average gift</span><span>[TO MEASURE]</span></div>
+          <div class="kv" style="border-bottom:0"><span>Average weight by category</span><span>[CATEGORY DATA]</span></div>
+        </div>
+        <p style="font-size:14px;line-height:1.5;color:#A9B4C8">Donations are reported only in aggregate. Individual choices stay private.</p>
+      </div>
+      <div class="foot"><button class="btn btn-light" data-a="restart">Restart demo</button></div>`;
+    }
+  };
+
+  // ---------- Render ----------
+  const phone = document.getElementById('phone');
+  const RL = { intro: ['Demo intro', 'role-neutral'], giver: ['Giver · Anna', 'role-giver'], recipient: ['Recipient · Daniel', 'role-recipient'], both: ['Giver + Recipient', 'role-both'], investor: ['Investor view', 'role-neutral'] };
+  const WHO = {
+    giver: ['A', 'Anna · Giver', 'Västra Hamnen, Malmö', 'av-giver'], recipient: ['D', 'Daniel · Recipient', 'Malmö', 'av-recipient'],
+    both: ['2', 'Anna and Daniel', 'Handover in person', 'av-both'], investor: ['i', 'Investor view', 'Outside the consumer app', 'av-neutral'],
+    intro: ['1', 'Demo intro', 'Before the journey starts', 'av-neutral']
+  };
+
+  function render() {
+    const d = derived();
+    const role = ROLE[S.screen];
+    const sameScreen = lastScreen === S.screen;
+    const oldScroll = phone.querySelector('.scroll');
+    const keep = sameScreen && oldScroll ? oldScroll.scrollTop : 0;
+    const dark = S.screen === 's18' || S.screen === 's19';
+    phone.innerHTML = `<div class="demobar"><span class="role ${RL[role][1]}"><span class="rdot"></span>${RL[role][0]}</span><button class="restart" data-a="restart">${I(P.restart, 16, 2)}Restart demo</button></div>
+      <div class="screen${sameScreen ? '' : ' enter'}${dark ? ' dark' : ''}">${SCREENS[S.screen](d)}</div>
+      ${S.banner ? `<div class="banner">${I(P.swap, 18, 2)}<span>${S.banner}</span></div>` : ''}
+      ${S.toast ? `<div class="toast" role="status">${S.toast}</div>` : ''}`;
+    const sc = phone.querySelector('.scroll');
+    if (sc && keep) sc.scrollTop = keep;
+    lastScreen = S.screen;
+    renderPanels(role);
+  }
+
+  function renderPanels(role) {
+    const stage = STAGE[S.screen] || 1;
+    document.getElementById('stages').innerHTML = STAGES.map((s, i) => `<button class="stg${i + 1 === stage ? ' on' : i + 1 < stage ? ' done' : ''}" data-a="jump:${s[1]}"><span class="num">${i + 1}</span><span>${s[0]}</span></button>`).join('');
+    const w = WHO[role] || WHO.intro;
+    const cur = STAGES[stage - 1];
+    document.getElementById('side').innerHTML = `
+      <span class="label">Now viewing</span>
+      <div class="panel who" style="padding:18px"><span class="av ${w[3]}">${w[0]}</span><span class="col"><span style="font-weight:700;font-size:18px">${w[1]}</span><span style="font-size:14px;color:var(--muted)">${w[2]}</span></span></div>
+      <div class="panel col" style="gap:10px;padding:22px"><span style="font-size:13px;font-weight:700;color:var(--green)">Stage ${stage} of 13</span><span style="font-family:var(--display);font-size:26px;font-weight:600;line-height:1.1">${cur[0]}</span><span style="font-size:16px;line-height:1.5;color:var(--ink2)">${cur[2]}</span></div>
+      <div class="col" style="gap:10px">
+        <button class="dbtn" data-a="switch" ${SWITCH[S.screen] ? '' : 'disabled'}>${I(P.swap, 20)}Switch perspective</button>
+        <button class="dbtn" data-a="restart">${I(P.restart, 20)}Restart demo</button>
+        <button class="dbtn" data-a="map">${I(P.map, 20)}Screen map</button>
+      </div>
+      <div class="principles"><span class="label">Built in</span>
+        ${['Every item is free. No prices, offers or paid priority.', 'The donation invitation appears only after the item is received.', 'The giver never learns whether or how much the recipient gave.', 'No ratings, altruism scores or leaderboards.'].map((t) => `<div class="pr"><span style="color:var(--green);flex:none">${I(P.check, 18, 2.2)}</span><span>${t}</span></div>`).join('')}
+      </div>`;
+  }
+
+  function set(patch) { Object.assign(S, patch); render(); }
+  function go(screen, extra) {
+    const from = ROLE[S.screen], to = ROLE[screen];
+    let banner = '';
+    if (screen === 's14') banner = 'Private to Daniel. Anna never sees this screen.';
+    else if (from !== to) banner = to === 'giver' ? 'Now viewing as Anna, the giver' : to === 'recipient' ? 'Now viewing as Daniel, the recipient' : to === 'both' ? 'Anna and Daniel meet for the handover' : '';
+    set(Object.assign({ screen, toast: '', banner, chat: false, paying: false }, extra || {}));
+    if (banner) later(() => { if (S.banner === banner) set({ banner: '' }); }, 2600);
+  }
+  function toast(msg) { set({ toast: msg }); later(() => { if (S.toast === msg) set({ toast: '' }); }, 2600); }
+  function restart() { timers.forEach(clearTimeout); timers = []; S = fresh(); lastScreen = null; render(); }
+
+  const HINTS = { give: "In this demo Anna is giving. Tap 'Give an item'.", photo: 'Photos are simulated in this demo.', desk: "For this demo, follow Anna's desk." };
+  const QA = { there: "Anna has been told you'll be there.", late: 'Anna has been notified: running 15 minutes late.', resched: 'Anna will be asked to choose a new time slot.' };
+
+  function act(a, el) {
+    const [k, v] = a.split(':');
+    switch (k) {
+      case 'go': return go(v);
+      case 'jump': closeMap(); return go(v, v === 's12' ? { annaOk: false, danielOk: false } : null);
+      case 'switch': if (SWITCH[S.screen]) go(SWITCH[S.screen]); return;
+      case 'restart': return restart();
+      case 'back': if (PREV[S.screen]) go(PREV[S.screen]); return;
+      case 'hint': return toast(HINTS[v]);
+      case 'photo': return set({ photo: v });
+      case 'annaCause': return set({ annaCause: v, dCat: null, charity: null });
+      case 'slot': return set({ slot: v });
+      case 'chk1': return set({ chk1: el.checked });
+      case 'chk2': return set({ chk2: el.checked });
+      case 'sendRequest': if (S.chk1 && S.chk2) go('s9'); return;
+      case 'pick': return set({ pick: v });
+      case 'reserve': return S.pick === 'daniel' ? go('s10') : toast('For this demo, reserve the desk for Daniel.');
+      case 'qa': return toast(QA[v]);
+      case 'chat': return set({ chat: !S.chat });
+      case 'sofia': set({ sofia: true }); return toast('Sofia gets the pickup details automatically.');
+      case 'annaGave': return set({ annaOk: true });
+      case 'danielGot': return set({ danielOk: true });
+      case 'qr': set({ annaOk: true, danielOk: true }); return toast('QR code matched. Both sides confirmed.');
+      case 'handover': return (S.annaOk && S.danielOk) ? go('s13') : set({ annaOk: true, danielOk: true });
+      case 'annaDone': return go('s14', { amount: null, other: '' });
+      case 'amount': set({ amount: v === 'other' ? 'other' : Number(v) }); if (v === 'other') { const i = document.getElementById('other'); if (i) i.focus(); } return;
+      case 'donate': if (derived().amountVal > 0) go('s16'); return;
+      case 'openCause': return go('s15', { tmpCat: null, tmpCharity: null });
+      case 'tmpCat': return set({ tmpCat: v, tmpCharity: null });
+      case 'tmpCharity': return set({ tmpCharity: v });
+      case 'causeContinue': { const [c, ch] = el.dataset.v.split('|'); go('s14', { dCat: c, charity: ch }); return toast('Cause set: ' + CATS[c] + '.'); }
+      case 'pay': return set({ pay: v });
+      case 'confirmPay': if (S.paying) return; set({ paying: 'auth' }); later(() => set({ paying: 'done' }), 1100); later(() => go('s17'), 1900); return;
+      case 'map': return openMap();
+      case 'closeMap': return closeMap();
+    }
+  }
+
+  document.addEventListener('click', (e) => {
+    const el = e.target.closest('[data-a]');
+    if (!el || el.type === 'checkbox' || el.disabled) return;
+    act(el.dataset.a, el);
+  });
+  document.addEventListener('change', (e) => {
+    const el = e.target;
+    if (el.type === 'checkbox' && el.dataset.a) act(el.dataset.a, el);
+  });
+  document.addEventListener('input', (e) => {
+    const el = e.target;
+    if (el.id === 'msg') S.msg = el.value;
+    if (el.id === 'other') {
+      S.other = el.value;
+      const n = parseInt(el.value, 10);
+      const b = document.getElementById('donateBtn');
+      if (b) { b.disabled = !(n > 0); b.textContent = n > 0 ? 'Donate SEK ' + n : 'Choose an amount to donate'; }
+    }
+  });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMap(); });
+
+  // ---------- Screen map ----------
+  const mapwrap = document.getElementById('mapwrap');
+  function bx(col, row, n, cls, title, note, screen) { return `<button class="bx" style="grid-column:${col};grid-row:${row}" data-a="jump:${screen}"><span class="n ${cls}">${n}</span><b>${title}</b><small>${note}</small></button>`; }
+  const lanes = () => `<div class="lane" style="grid-row:1;background:#E6F0E9"></div><div class="lane" style="grid-row:2;background:#E7EBF2"></div><div class="lane" style="grid-row:3;background:#F8E9E1"></div>
+    <div class="ll" style="grid-column:1;grid-row:1;color:var(--green-d)">Giver</div><div class="ll" style="grid-column:1;grid-row:2;color:var(--blue-d)">Shared</div><div class="ll" style="grid-column:1;grid-row:3;color:var(--coral-d)">Recipient</div>`;
+  const arrowSm = `<span style="color:var(--muted)">${I(P.arrow, 18, 2)}</span>`;
+  function openMap() {
+    mapwrap.innerHTML = `<div class="map">
+      <div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:16px;align-items:flex-end">
+        <div class="col" style="gap:6px"><h1 style="font-size:44px;letter-spacing:-.02em">Screen map</h1><p style="font-size:17px;color:var(--ink2)">Giver and recipient journeys · follow the numbers · click any screen to jump there</p></div>
+        <div class="row" style="gap:16px;font-size:14px;font-weight:600;flex-wrap:wrap"><span class="row" style="gap:8px"><span class="n ng">A</span>Giver: Anna</span><span class="row" style="gap:8px"><span class="n nr">D</span>Recipient: Daniel</span><span class="row" style="gap:8px"><span class="n ns">+</span>Shared or investor view</span><button class="dbtn" data-a="closeMap" style="width:auto;padding:0 18px">${I(P.x, 18, 2)}Close</button></div>
+      </div>
+      <div class="col" style="gap:12px"><h2 style="font-size:22px;font-weight:600">Part 1 · List, discover, request</h2><div class="lanes">${lanes()}
+        ${bx(2, 2, '01', 'ns', 'Big idea', 'See how it works', 's1')}${bx(3, 1, '02', 'ng', 'Home', 'Give an item', 's2')}${bx(4, 1, '03', 'ng', 'Create listing', 'Price: Free · Continue', 's3')}
+        ${bx(5, 1, '04', 'ng', 'Suggest a cause', 'Optional · Publish', 's4')}${bx(6, 1, '05', 'ng', 'Published', 'Switch to recipient', 's5')}${bx(7, 3, '06', 'nr', 'Free items feed', "Open Anna's desk", 's6')}
+        ${bx(8, 3, '07', 'nr', 'Item details', 'Request this item', 's7')}${bx(9, 3, '08', 'nr', 'Structured request', 'Time slot · Send', 's8')}${bx(10, 1, '09', 'ng', 'Choose recipient', 'No scores · Reserve', 's9')}
+      </div></div>
+      <div class="col" style="gap:12px"><h2 style="font-size:22px;font-weight:600">Part 2 · Pickup, handover, voluntary giving</h2><div class="lanes">${lanes()}
+        ${bx(2, 1, '10', 'ng', 'Reserved', 'Backup queue · Confirm', 's10')}${bx(3, 3, '11', 'nr', 'Pickup details', "Address revealed · I've arrived", 's11')}${bx(4, 2, '12', 'ns', 'Confirm handover', 'Both confirm · QR optional', 's12')}
+        ${bx(5, 1, '13', 'ng', "Anna's completion", 'No donation info · Done', 's13')}${bx(6, 3, '14', 'nr', 'Donation invitation', 'Private · no preset amount', 's14')}${bx(7, 3, '15', 'nr', 'Choose a cause', 'Verified partners', 's15')}
+        ${bx(8, 3, '16', 'nr', 'Simulated payment', 'Apple Pay · Google Pay · Card', 's16')}${bx(9, 3, '17', 'nr', "Daniel's completion", 'Three impacts · Finish', 's17')}${bx(10, 2, '18', 'ns', 'Investor summary', 'View impact model', 's18')}${bx(11, 2, '19', 'ns', 'Impact model', 'Restart demo', 's19')}
+      </div></div>
+      <div class="col" style="gap:12px"><h2 style="font-size:22px;font-weight:600">Alternative paths</h2><div class="alts">
+        <div class="alt"><b style="font-size:17px">Skip the donation</b><div class="flow"><span class="st">14 · Not now</span>${arrowSm}<span class="st">“The item was free and remains free”</span>${arrowSm}<span class="st">18</span></div><span class="sub">No repeat prompt. Profile and access unchanged.</span></div>
+        <div class="alt"><b style="font-size:17px">Change the cause</b><div class="flow"><span class="st">14 · Choose another cause</span>${arrowSm}<span class="st">15 · Pick cause + partner</span>${arrowSm}<span class="st">Back to 14, new cause</span></div><span class="sub">Anna's suggestion is marked but never required.</span></div>
+        <div class="alt"><b style="font-size:17px">Pickup cancelled</b><div class="flow"><span class="st">11 · Cancel request</span>${arrowSm}<span class="st">Back to queue</span>${arrowSm}<span class="st">Anna: next person</span></div><span class="sub">No penalties, no negative ratings.</span></div>
+      </div></div></div>`;
+    mapwrap.classList.add('open');
+  }
+  function closeMap() { mapwrap.classList.remove('open'); }
+  mapwrap.addEventListener('click', (e) => { if (e.target === mapwrap) closeMap(); });
+
+  render();
+})();
+</script>
+</body>
+</html>
